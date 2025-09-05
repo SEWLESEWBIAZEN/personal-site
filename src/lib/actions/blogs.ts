@@ -6,7 +6,7 @@ import supabase from "../utils/supabase";
 export const addBlog= async(blog:Blog)=>{
  
   try{
-    const { data, error } = await supabase
+    const { data, error } = await supabase.supabase
       .from('blogs')
       .insert([
         {
@@ -30,7 +30,7 @@ export const addBlog= async(blog:Blog)=>{
 
 export const getAllBlogs = async () => {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabase.supabase
       .from('blogs')
       .select('*'); 
     if (error) throw error;
@@ -54,7 +54,7 @@ export const getBlogPost = async (slug: string): Promise<{
   data: BlogProps | null;
 }> => {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabase.supabase
       .from('blogs')
       .select('*')
       .eq('slug', slug)  // Correct filter syntax

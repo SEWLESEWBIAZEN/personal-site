@@ -1,13 +1,9 @@
-
-
 import { Project } from "../interfaces";
 import  supabase  from '../utils/supabase'
 
-
-export const addProject= async(project:Project)=>{
-  
+export const addProject= async(project:Project)=>{  
   try{
-    const { data, error } = await supabase
+    const { data, error } = await supabase.supabase
       .from('projects')
       .insert([
         {
@@ -28,11 +24,11 @@ export const addProject= async(project:Project)=>{
       data:null
     }
   }
-
 }
+
 export const getAllProjects = async () => {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabase.supabase
       .from('projects')
       .select('*');  // Use .select() instead of .collect()
     return {

@@ -107,3 +107,65 @@
     }
   }
 }
+
+.youtube-embed iframe {
+  width: 100%;
+  height: 100%;
+}
+
+.aspect-video {
+  aspect-ratio: 16 / 9;
+}
+.codex-editor__redactor {
+  padding-bottom: 2rem !important;
+}
+
+/* Remove background from Editor.js stub blocks */
+.ce-block__content .ce-stub {
+  background-color: transparent !important;
+}
+
+/* Remove background from audio player preloader */
+.audio-tool__audio-player .audio-tool__audio-preloader {
+  background-color: transparent !important;
+}
+
+/* Remove border and background from audio tool */
+.audio-tool__audio {
+  border: none !important;
+  background-color: transparent !important;
+}
+.cdx-block{
+  background-color: transparent !important;
+  border: none !important;
+}
+
+/* .ce-inline-toolbar .ce-toolbar .ce-toolbar--opened .ce-toolbar__content {
+  background-color: black !important;
+  border: none !important;
+} */
+.ce-toolbar--opened {
+  background-color: black !important;
+  border: none !important;
+}
+.ce-toolbar {
+  background-color: #753636; /* replace with your desired color */
+}
+.ce-toolbar__content {
+  background-color: #cf3636;
+}
+
+/* .ce-toolbar__plus {
+  background-color: #007bff; 
+  border-radius: 6px; 
+  padding: 4px; 
+} */
+
+.ce-toolbar__plus svg {
+  color: purple;
+  stroke: purple;
+}
+
+.ce-toolbar__plus:hover {
+  background-color: #27307c;
+}

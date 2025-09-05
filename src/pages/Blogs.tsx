@@ -122,7 +122,7 @@ const Blogs: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredPosts.map((post) => (
               <article key={post.id} className="h-full">
-                <Link to={`/blog/${post.slug}`} className="block h-full">
+                <Link to={`/blogs/${post.slug}`} className="block h-full">
                   <Card className="h-full hover:shadow-md transition-shadow duration-200">
                     <CardHeader>
                       <CardTitle className="line-clamp-2">{post.title}</CardTitle>

@@ -47,7 +47,7 @@ const BlogSection: React.FC = () => {
       <div className="container-content">
         <div className="flex justify-between items-center mb-8">
           <h2>Blog</h2>
-          <Link to="/blog">
+          <Link to="/blogs">
             <Button variant="ghost" className="group text-sm">
               View all posts
               <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -57,7 +57,7 @@ const BlogSection: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {featuredPosts.map((post) => (
-            <Link to={`/blog/${post.slug}`} key={post.id}>
+            <Link to={`/blogs/${post.slug}`} key={post.id}>
               <Card className="h-full hover:shadow-md transition-shadow">
                 <CardHeader>
                   <CardTitle className="line-clamp-2">{post.title}</CardTitle>

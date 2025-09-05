@@ -13,6 +13,7 @@ import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import Blogs from "./pages/Blogs";
 import AdminPanel from "./pages/admin/AdminPanel";
+import AddBlogForm from "./pages/admin/Blog";
 
 // Configure React Query
 const queryClient = new QueryClient({
@@ -40,9 +41,10 @@ const App = () => {
                 <Route path="/projects" element={<Projects />} />
                 
                 {/* Blog Routes */}
-                <Route path="/blog">
+                <Route path="/blogs">
                   <Route index element={<Blogs/>} />
                   <Route path=":slug" element={<BlogPost />} />
+                  <Route path="admin/new" element={<AddBlogForm />} />
                 </Route>
                 
                 <Route path="/contact" element={<Contact />} />
