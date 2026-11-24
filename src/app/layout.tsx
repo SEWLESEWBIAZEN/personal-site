@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
+import type { ReactNode } from "react";
 import { Toaster } from "sonner";
-import "@/styles/globals.css";
+import "../styles/globals.css";
 
 const siteUrl = process.env.AUTH_URL || "http://localhost:3000";
 
@@ -32,7 +33,7 @@ export const viewport: Viewport = {
 // Applies the saved theme before first paint to avoid a light-mode flash.
 const themeScript = `try{var t=localStorage.getItem("theme");if(t==="dark")document.documentElement.dataset.theme="dark"}catch(e){}`;
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>

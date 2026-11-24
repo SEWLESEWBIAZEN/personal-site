@@ -18,7 +18,7 @@ env:
   # Throwaway CI database (the postgres service below), NOT production.
   DATABASE_URL: postgresql://postgres:postgres@localhost:5432/personal_studio
   AUTH_SECRET: ci-only-not-a-real-secret-0123456789abcdef
-  AUTH_URL: http://localhost:3000
+  AUTH_URL: https://sewlesew.ethiodeploy.app
   STORAGE_PROVIDER: local
   STORAGE_LOCAL_PATH: ./uploads
 

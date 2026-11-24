@@ -64,7 +64,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV PORT=3000
+ENV PORT=4000
 ENV HOSTNAME=0.0.0.0
 
 # Create non-root application user
@@ -84,7 +84,7 @@ RUN mkdir -p public uploads \
 # Run as non-root user
 USER nextjs
 
-EXPOSE 3000
+EXPOSE 4000
 
 # Start Next.js standalone server
 CMD ["node", "server.js"]
