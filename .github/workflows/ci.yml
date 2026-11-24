@@ -1,0 +1,197 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Avoid cancelling a workflow while a database migration is running.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  NEXT_TELEMETRY_DISABLED: 1
+  # Throwaway CI database (the postgres service below), NOT production.
+  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/personal_studio
+  AUTH_SECRET: ci-only-not-a-real-secret-0123456789abcdef
+  AUTH_URL: http://localhost:3000
+  STORAGE_PROVIDER: local
+  STORAGE_LOCAL_PATH: ./uploads
+
+jobs:
+  # ============================================
+  # APP QUALITY, MIGRATIONS & BUILD
+  # ============================================
+  app:
+    name: App (lint, types, migrations, build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: personal_studio
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d personal_studio"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Version comes from "packageManager" in package.json.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # Matches the node:20-alpine production image.
+          node-version: 20
+          cache: pnpm
+
+      # postinstall runs `prisma generate`.
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate Prisma schema
+        run: pnpm prisma validate
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type-check
+        run: pnpm typecheck
+
+      # Runs against the temporary CI database, NOT production.
+      - name: Apply migrations
+        run: pnpm db:deploy
+
+      # Fails if schema.prisma has changes with no migration for them.
+      - name: Check migrations match schema
+        run: |
+          pnpm prisma migrate diff \
+            --from-url "$DATABASE_URL" \
+            --to-schema-datamodel prisma/schema.prisma \
+            --exit-code
+
+      - name: Seed
+        env:
+          ADMIN_EMAIL: ci@example.com
+          ADMIN_PASSWORD: ci-password-123
+          SEED_SAMPLE_CONTENT: "true"
+        run: pnpm db:seed
+
+      - name: Build
+        run: pnpm build
+
+  # ============================================
+  # DOCKER IMAGE BUILDS
+  # ============================================
+  images:
+    name: Docker images build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build migrate image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: migrate
+          tags: personal-studio:migrate
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build runtime image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: runner
+          tags: personal-studio:runtime
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ============================================
+  # PRODUCTION DATABASE MIGRATIONS
+  # ============================================
+  production-migrate:
+    name: Production Database Migration
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # Production migrations run only after all checks pass.
+    needs:
+      - app
+      - images
+
+    # Never migrate production from a pull request
+    # or a non-default branch.
+    if: >
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/master'
+
+    # Configure this GitHub Environment with optional
+    # required reviewers for production approval.
+    environment: production
+
+    # Serialize production database migrations.
+    concurrency:
+      group: personal-studio-production-migrations
+      cancel-in-progress: false
+
+    env:
+      DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate production database configuration
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::PRODUCTION_DATABASE_URL secret is missing."
+            exit 1
+          fi
+
+          case "$DATABASE_URL" in
+            postgresql://*|postgres://*)
+              echo "Production database URL configuration is valid."
+              ;;
+            *)
+              echo "::error::Invalid PostgreSQL connection URL."
+              exit 1
+              ;;
+          esac
+
+      - name: Apply production database migrations
+        run: |
+          echo "Applying production Prisma migrations..."
+          pnpm db:deploy
+          echo "Production database migration completed."
+
+      - name: Verify production migration status
+        run: pnpm prisma migrate status
