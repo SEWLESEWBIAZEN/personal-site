@@ -130,36 +130,36 @@ export default async function ProjectPage({ params }: Props) {
             </section>
           )}
         </div>
-
-        <aside className="detail-aside">
-          {project.technologies.length > 0 && (
-            <div>
-              <h2 className="aside-label">TECHNOLOGIES</h2>
-              <div className="tag-list">
-                {project.technologies.map((t) => (
-                  <Link key={t} href={`/projects?tech=${encodeURIComponent(t)}`}>
-                    <span>{t}</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
-          {documents.length > 0 && (
-            <div>
-              <h2 className="aside-label">DOCUMENTS</h2>
-              <ul className="doc-list">
-                {documents.map((d) => (
-                  <li key={d.id}>
-                    <a href={d.url} target="_blank" rel="noopener noreferrer">
-                      {d.caption || d.altText || "Document"} <ExternalLink size={11} />
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </aside>
       </div>
+
+      <aside className="detail-aside">
+        {project.technologies.length > 0 && (
+          <div>
+            <h2 className="aside-label">TECHNOLOGIES</h2>
+            <div className="tag-list">
+              {project.technologies.map((t) => (
+                <Link key={t} href={`/projects?tech=${encodeURIComponent(t)}`}>
+                  <span>{t}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+        {documents.length > 0 && (
+          <div>
+            <h2 className="aside-label">DOCUMENTS</h2>
+            <ul className="doc-list">
+              {documents.map((d) => (
+                <li key={d.id}>
+                  <a href={d.url} target="_blank" rel="noopener noreferrer">
+                    {d.caption || d.altText || "Document"} <ExternalLink size={11} />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </aside>
 
       {(images.length > 0 || videos.length > 0) && (
         <section className="gallery">
