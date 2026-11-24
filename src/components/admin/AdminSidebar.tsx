@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, FolderKanban, BookText, Lightbulb, Image as ImageIcon, Settings, LogOut, ExternalLink, Moon, Sun } from "lucide-react";
 import { logoutAction } from "@/server/actions/auth";
 import { useTheme } from "@/components/layout/ThemeProvider";
+import { Logo } from "@/components/ui/Logo";
 
 const links = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -31,7 +32,7 @@ export function AdminSidebar({ email }: { email: string }) {
       <aside className="admin-sidebar">
         <div className="admin-sidebar-brand">
           <Link className="brand" href="/admin/dashboard">
-            <span className="brand-mark">SB</span>
+            <Logo className="brand-mark" />
             <span className="brand-name">
               STUDIO ADMIN<span className="brand-period">.</span>
             </span>

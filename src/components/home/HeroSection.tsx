@@ -3,6 +3,7 @@
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
+import { Logo } from "@/components/ui/Logo";
 
 interface HeroSectionProps {
   introduction?: string | null;
@@ -70,9 +71,7 @@ export function HeroSection({ introduction }: HeroSectionProps) {
         <div className="orbit orbit-three" />
         <div className="art-center">
           <div className="core-ring">
-            <span>
-              SB<span className="blue-period">.</span>
-            </span>
+            <Logo variant="glyph" className="core-logo" />
           </div>
           <span className="core-caption">IDEAS &rarr; SYSTEMS</span>
         </div>

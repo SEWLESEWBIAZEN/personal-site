@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { loginAction } from "@/server/actions/auth";
+import { Logo } from "@/components/ui/Logo";
 
 export function LoginForm() {
   const router = useRouter();
@@ -29,7 +30,7 @@ export function LoginForm() {
       <div style={{ width: "100%", maxWidth: 380 }}>
         <div style={{ marginBottom: 36 }}>
           <div className="brand" style={{ marginBottom: 28 }}>
-            <span className="brand-mark">SB</span>
+            <Logo className="brand-mark" />
             <span className="brand-name">
               STUDIO ADMIN<span className="brand-period">.</span>
             </span>

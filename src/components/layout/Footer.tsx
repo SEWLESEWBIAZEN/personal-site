@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { Logo } from "@/components/ui/Logo";
 
 export function Footer({ location }: { location?: string | null }) {
   return (
     <footer className="footer">
       <div className="footer-top">
         <Link className="brand" href="/">
-          <span className="brand-mark">SB</span>
+          <Logo className="brand-mark" />
           <span className="brand-name">
             SEWLESEW BIAZEN<span className="brand-period">.</span>
           </span>

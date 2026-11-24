@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowUpRight, Moon, Sun, Menu, X } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
+import { Logo } from "@/components/ui/Logo";
 
 const nav = [
   { label: "Work", href: "/projects" },
@@ -30,7 +31,7 @@ export function Header({ location }: { location?: string | null }) {
       </div>
       <header className="header">
         <Link className="brand" href="/" aria-label="Sewlesew Biazen home">
-          <span className="brand-mark">SB</span>
+          <Logo className="brand-mark" />
           <span className="brand-name">
             SEWLESEW BIAZEN<span className="brand-period">.</span>
           </span>
