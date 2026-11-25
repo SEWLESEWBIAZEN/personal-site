@@ -49,14 +49,18 @@ test("project stage and role are saved in admin and shown on the case study", as
   await page.waitForURL(/\/admin\/projects\/[^/]+\/edit$/);
   await expect(page.getByText("Case study completeness")).toBeVisible();
   await page.selectOption("#stage", "CONCEPT");
-  await page.fill("#role", "E2E role text.");
+  // Unique per run so the form is always dirty, even against a reused database.
+  const role = `E2E role text ${Date.now()}.`;
+  await page.selectOption("#stage", "PROTOTYPE");
+  await page.selectOption("#stage", "CONCEPT");
+  await page.fill("#role", role);
   await page.getByRole("button", { name: /save/i }).first().click();
   await expect(page.locator("[data-sonner-toast]").getByText(/saved/i)).toBeVisible();
 
   await page.goto("/projects/sacco-management");
   await expect(page.locator(".case-glance")).toContainText("Concept");
   await expect(page.getByRole("heading", { name: "My role" })).toBeVisible();
-  await expect(page.getByText("E2E role text.")).toBeVisible();
+  await expect(page.getByText(role)).toBeVisible();
   await page.goto("/projects");
   await expect(page.locator(".stage-chip").first()).toBeVisible();
 });

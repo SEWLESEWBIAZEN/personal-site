@@ -101,7 +101,16 @@ export function TiptapEditor({ content, fallbackHtml, onChange, placeholder = "S
 
   const insertImage = useCallback(
     (item: MediaItem) => {
-      editor?.chain().focus().setImage({ src: item.url, alt: item.altText ?? "", title: item.altText ?? undefined }).run();
+      // Insert the image followed by an empty paragraph and put the cursor there. With a
+      // bare setImage the new image stays selected, and the next keystroke replaces it.
+      editor
+        ?.chain()
+        .focus()
+        .insertContent([
+          { type: "image", attrs: { src: item.url, alt: item.altText ?? "", title: item.altText ?? null } },
+          { type: "paragraph" },
+        ])
+        .run();
       setPickerOpen(false);
     },
     [editor],

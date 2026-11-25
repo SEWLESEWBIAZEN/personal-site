@@ -22,6 +22,12 @@ async function uploadImage(page: Page, file: string) {
   await page.getByRole("button", { name: "Image", exact: true }).click();
   await page.locator("dialog[open] input[type=file]").setInputFiles(fixture(file));
   await expect(editor(page).locator("img")).toHaveCount(before + 1);
+  await expect(page.locator("dialog[open]")).toHaveCount(0);
+}
+
+/** Puts the caret in the paragraph the editor created after an inserted image. */
+async function continueAfterImage(page: Page) {
+  await editor(page).locator("img + p").last().click();
 }
 
 async function imageSources(page: Page) {
@@ -54,8 +60,8 @@ test("create → save → refresh → reopen → edit images → save → verify
   await page.keyboard.press("Control+i");
   await page.keyboard.press("Enter");
   await uploadImage(page, "red.png");
-  await page.keyboard.press("End");
-  await page.keyboard.press("Enter");
+  // The editor adds a paragraph after the image; typing there must not replace it.
+  await continueAfterImage(page);
   await page.keyboard.type("- first point");
   await page.keyboard.press("Enter");
   await page.keyboard.type("second point");
@@ -105,7 +111,6 @@ test("create → save → refresh → reopen → edit images → save → verify
   await page.keyboard.type(" revised");
   await editor(page).locator("p").last().click();
   await page.keyboard.press("End");
-  await page.keyboard.press("Enter");
   await uploadImage(page, "green.png");
   const beforeSave = await imageSources(page);
   const green = beforeSave.find((s) => s !== blue)!;
