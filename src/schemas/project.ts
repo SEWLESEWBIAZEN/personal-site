@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PROJECT_STAGES } from "@/lib/project-stage";
 
 const optionalUrl = z
   .string()
@@ -26,6 +27,10 @@ export const projectSchema = z.object({
   technicalChallenges: z.string().max(20000).optional().nullable(),
   architecture: z.string().max(20000).optional().nullable(),
   keyFeatures: z.string().max(20000).optional().nullable(),
+  role: z.string().max(20000).optional().nullable(),
+  objectives: z.string().max(20000).optional().nullable(),
+  outcomes: z.string().max(20000).optional().nullable(),
+  stage: z.preprocess((v) => (v === "" ? null : v), z.enum(PROJECT_STAGES).nullable().optional()),
   technologies: z.array(z.string().trim().min(1).max(60)).max(40),
   categoryId: z.string().optional().nullable(),
   coverImage: mediaUrl,

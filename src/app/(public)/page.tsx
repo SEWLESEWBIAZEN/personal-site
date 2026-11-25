@@ -1,5 +1,6 @@
 import { HeroSection } from "@/components/home/HeroSection";
 import { TickerSection } from "@/components/home/TickerSection";
+import { CapabilitiesSection } from "@/components/home/CapabilitiesSection";
 import { ProjectsSection } from "@/components/home/ProjectsSection";
 import { JournalSection } from "@/components/home/JournalSection";
 import { IdeasSection } from "@/components/home/IdeasSection";
@@ -30,7 +31,8 @@ export default async function HomePage() {
           "@context": "https://schema.org",
           "@type": "Person",
           name: "Sewlesew Biazen",
-          jobTitle: "Software Engineer",
+          jobTitle: "Software & AI Engineer",
+          knowsAbout: ["AI engineering", "Retrieval-augmented generation", "AI agents", "Enterprise software", "Full-stack development", "Workflow automation", "System integration"],
           url: absoluteUrl("/"),
           ...(settings.location ? { address: settings.location } : {}),
           sameAs: [settings.githubUrl, settings.linkedinUrl].filter(Boolean),
@@ -38,12 +40,13 @@ export default async function HomePage() {
       />
       <HeroSection introduction={settings.introduction} />
       <TickerSection />
+      <CapabilitiesSection />
       <ProjectsSection projects={projects} />
       <JournalSection articles={articles} />
       <IdeasSection ideas={ideas} />
       <AboutSection githubUrl={settings.githubUrl} linkedinUrl={settings.linkedinUrl} profileImage={settings.profileImage} />
       <NowSection items={nowItems} />
-      <ContactSection email={settings.email} />
+      <ContactSection email={settings.email} githubUrl={settings.githubUrl} linkedinUrl={settings.linkedinUrl} />
     </>
   );
 }

@@ -23,7 +23,7 @@ export function Header({ location }: { location?: string | null }) {
   return (
     <>
       <div className="topline">
-        <span>INDEPENDENT ENGINEERING STUDIO</span>
+        <span>INDEPENDENT SOFTWARE &amp; AI ENGINEERING STUDIO</span>
         <span className="topline-right">
           <i className="live-dot" /> OPEN TO INTERESTING COLLABORATIONS{" "}
           {location && <span className="topline-location">/ {location.toUpperCase()}</span>}

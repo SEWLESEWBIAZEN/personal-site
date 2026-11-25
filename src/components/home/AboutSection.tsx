@@ -11,7 +11,7 @@ export function AboutSection({ githubUrl, linkedinUrl, profileImage }: AboutSect
     <section className="about-section section-wrap" id="about">
       <div className="about-top">
         <div className="eyebrow">
-          <span className="eyebrow-line" /> 03 / A LITTLE ABOUT ME
+          <span className="eyebrow-line" /> 04 / A LITTLE ABOUT ME
         </div>
         <h2>
           Curiosity is my

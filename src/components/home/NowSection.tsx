@@ -30,7 +30,7 @@ export function NowSection({ items }: { items: NowItem[] }) {
         <div className="now-heading">
           <div>
             <div className="eyebrow">
-              <span className="eyebrow-line" /> 04 / CURRENTLY EXPLORING
+              <span className="eyebrow-line" /> 05 / CURRENTLY EXPLORING
             </div>
             <h2>
               On the <span className="serif-italic">workbench.</span>

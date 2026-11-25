@@ -16,7 +16,7 @@ export function IdeasSection({ ideas }: { ideas: IdeaCardData[] }) {
             Worth <span className="serif-italic">exploring.</span>
           </h2>
         </div>
-        <p className="section-aside">Early concepts, experiments, and questions I keep coming back to.</p>
+        <p className="section-aside">Product concepts, technical explorations and architectural possibilities — not built yet, or only just started.</p>
       </div>
       <div className="idea-grid">
         {ideas.map((idea) => (

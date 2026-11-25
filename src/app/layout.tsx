@@ -11,11 +11,11 @@ export const metadata: Metadata = {
     default: "Sewlesew Biazen — Engineering Studio",
     template: "%s — Sewlesew Biazen",
   },
-  description: "Personal engineering studio — software, systems, and notes from the engineering desk.",
+  description: "Independent Software & AI Engineering Studio — building AI-powered products, enterprise applications, and intelligent automation systems.",
   alternates: { canonical: "/" },
   openGraph: {
     title: "Sewlesew Biazen — Engineering Studio",
-    description: "Personal engineering studio — software, systems, and notes from the engineering desk.",
+    description: "Independent Software & AI Engineering Studio — building AI-powered products, enterprise applications, and intelligent automation systems.",
     type: "website",
     url: "/",
     siteName: "Sewlesew Biazen",

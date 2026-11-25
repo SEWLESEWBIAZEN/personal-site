@@ -11,6 +11,7 @@ import { createProject, updateProject } from "@/server/actions/project";
 import { MediaField } from "./MediaField";
 import { TagPicker } from "./TagPicker";
 import type { MediaItem } from "./upload";
+import { CASE_STUDY_SECTIONS, PROJECT_STAGES, STAGE_LABELS } from "@/lib/project-stage";
 
 interface ProjectFormProps {
   project?: ProjectInput & { id: string; slug: string };
@@ -28,6 +29,10 @@ const empty: ProjectInput = {
   technicalChallenges: "",
   architecture: "",
   keyFeatures: "",
+  role: "",
+  objectives: "",
+  outcomes: "",
+  stage: null,
   technologies: [],
   categoryId: "",
   coverImage: "",
@@ -40,14 +45,7 @@ const empty: ProjectInput = {
   tagIds: [],
 };
 
-const longFields = [
-  ["description", "OVERVIEW", "What the project is and who it is for."],
-  ["problemStatement", "PROBLEM STATEMENT", "The problem worth solving."],
-  ["solution", "SOLUTION", "How the product addresses it."],
-  ["architecture", "ARCHITECTURE", "Components, boundaries, data flow. Blank lines separate paragraphs."],
-  ["technicalChallenges", "TECHNICAL CHALLENGES", "Trade-offs and hard parts."],
-  ["keyFeatures", "KEY FEATURES", "What it does well."],
-] as const;
+const longFields = CASE_STUDY_SECTIONS;
 
 export function ProjectForm({ project, categories, tags, media }: ProjectFormProps) {
   const router = useRouter();
@@ -67,6 +65,13 @@ export function ProjectForm({ project, categories, tags, media }: ProjectFormPro
   });
 
   const technologies = watch("technologies");
+  const values = watch();
+  const missing = [
+    ...CASE_STUDY_SECTIONS.filter(([name]) => !String(values[name] ?? "").trim()).map(([, label]) => label),
+    ...(values.stage ? [] : ["Project stage"]),
+    ...(technologies.length ? [] : ["Technology stack"]),
+    ...(values.coverImage ? [] : ["Cover image"]),
+  ];
 
   const addTech = () => {
     const value = techInput.trim();
@@ -111,9 +116,12 @@ export function ProjectForm({ project, categories, tags, media }: ProjectFormPro
 
           <div className="admin-card">
             <h2 className="admin-section-title">Case study</h2>
+            <p className="admin-form-hint" style={{ marginTop: -8, marginBottom: 16 }}>
+              Sections appear on the public page in this order. Empty sections are hidden — leave a section blank rather than guess.
+            </p>
             {longFields.map(([name, label, hint]) => (
               <div className="admin-form-group" key={name}>
-                <label className="admin-form-label" htmlFor={name}>{label}</label>
+                <label className="admin-form-label" htmlFor={name}>{label.toUpperCase()}</label>
                 <textarea id={name} {...register(name)} className="admin-form-input admin-form-textarea" rows={5} placeholder={hint} />
               </div>
             ))}
@@ -138,7 +146,32 @@ export function ProjectForm({ project, categories, tags, media }: ProjectFormPro
         </div>
 
         <div className="admin-form-side">
+          <div className="admin-card" aria-live="polite">
+            <h2 className="admin-section-title" style={{ marginBottom: 8 }}>Case study completeness</h2>
+            {missing.length === 0 ? (
+              <p className="admin-form-hint" style={{ margin: 0 }}>All sections are filled in.</p>
+            ) : (
+              <>
+                <p className="admin-form-hint" style={{ marginTop: 0 }}>Still to clarify ({missing.length}):</p>
+                <ul className="admin-checklist">
+                  {missing.map((m) => (
+                    <li key={m}>{m}</li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
           <div className="admin-card">
+            <div className="admin-form-group">
+              <label className="admin-form-label" htmlFor="stage">PROJECT STAGE</label>
+              <select id="stage" {...register("stage")} className="admin-form-input admin-form-select">
+                <option value="">Not specified</option>
+                {PROJECT_STAGES.map((s) => (
+                  <option key={s} value={s}>{STAGE_LABELS[s].label} — {STAGE_LABELS[s].hint}</option>
+                ))}
+              </select>
+              <span className="admin-form-hint">Shown publicly so experiments are never mistaken for production systems.</span>
+            </div>
             <div className="admin-form-group">
               <label className="admin-form-label" htmlFor="status">STATUS</label>
               <select id="status" {...register("status")} className="admin-form-input admin-form-select">

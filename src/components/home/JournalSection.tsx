@@ -40,13 +40,13 @@ export function JournalSection({ articles }: { articles: ArticleListItem[] }) {
         <div className="section-heading">
           <div>
             <div className="eyebrow">
-              <span className="eyebrow-line" /> 02 / THE ENGINEERING JOURNAL
+              <span className="eyebrow-line" /> 03 / THE ENGINEERING JOURNAL
             </div>
             <h2>
               Thinking out <span className="serif-italic">loud.</span>
             </h2>
           </div>
-          <p className="section-aside">A living notebook of things I build, problems I solve, and ideas I&apos;m still figuring out.</p>
+          <p className="section-aside">Implementation notes, architecture decisions, and lessons from debugging and experiments — written while building.</p>
         </div>
 
         {!featured ? (
