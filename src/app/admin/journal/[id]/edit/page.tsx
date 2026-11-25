@@ -1,3 +1,4 @@
+import type { ArticleInput } from "@/schemas/journal";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -51,7 +52,7 @@ export default async function EditArticlePage({ params }: Props) {
           persistedStatus: article.status,
           title: article.title,
           excerpt: article.excerpt ?? "",
-          content: (article.content as Record<string, unknown> | null) ?? null,
+          content: (article.content as ArticleInput["content"]) ?? null,
           contentHtml: article.contentHtml ?? "",
           coverImage: article.coverImage ?? "",
           status: article.status,

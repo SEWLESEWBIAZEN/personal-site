@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,9 +13,10 @@ import { MediaField } from "./MediaField";
 import { TagPicker } from "./TagPicker";
 import { ideaStatusOptions } from "./options";
 import type { MediaItem } from "./upload";
+import { unwrap } from "@/lib/action-result";
 
 interface IdeaFormProps {
-  idea?: IdeaInput & { id: string; slug: string };
+  idea?: IdeaInput & { id: string; slug: string; updatedAt?: string };
   categories: { id: string; name: string }[];
   tags: { id: string; name: string }[];
   media: MediaItem[];
@@ -40,9 +41,11 @@ export function IdeaForm({ idea, categories, tags, media }: IdeaFormProps) {
     defaultValues: idea ? { ...empty, ...idea } : empty,
   });
 
+  const version = useRef(idea?.updatedAt);
+
   const handleEditorChange = useCallback(
     (json: object, html: string) => {
-      setValue("content", json as Record<string, unknown>, { shouldDirty: true });
+      setValue("content", json as IdeaInput["content"], { shouldDirty: true });
       setValue("contentHtml", html, { shouldDirty: true });
     },
     [setValue],
@@ -51,17 +54,18 @@ export function IdeaForm({ idea, categories, tags, media }: IdeaFormProps) {
   const onSubmit = async (data: IdeaInput) => {
     try {
       if (idea) {
-        await updateIdea(idea.id, data);
+        const saved = unwrap(await updateIdea(idea.id, data, { expectedUpdatedAt: version.current }));
+        version.current = saved.updatedAt;
         reset(data);
         toast.success("Idea saved");
         router.refresh();
       } else {
-        const created = await createIdea(data);
+        const created = unwrap(await createIdea(data));
         toast.success("Idea captured");
         router.push(`/admin/ideas/${created.id}/edit`);
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to save idea");
+      toast.error(err instanceof Error ? err.message : "Failed to save idea", { duration: 10000 });
     }
   };
 
@@ -83,7 +87,7 @@ export function IdeaForm({ idea, categories, tags, media }: IdeaFormProps) {
           </div>
           <div className="admin-card">
             <span className="admin-form-label">NOTES (OPTIONAL)</span>
-            <TiptapEditor content={idea?.content ?? null} onChange={handleEditorChange} media={media} placeholder="Explore the idea…" />
+            <TiptapEditor content={idea?.content ?? null} fallbackHtml={idea?.contentHtml} onChange={handleEditorChange} media={media} placeholder="Explore the idea…" />
           </div>
         </div>
 
