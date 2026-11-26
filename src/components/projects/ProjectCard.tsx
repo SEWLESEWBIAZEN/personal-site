@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { stageLabel } from "@/lib/project-stage";
 
 export interface ProjectCardData {
   id: string;
@@ -10,6 +11,7 @@ export interface ProjectCardData {
   coverImage: string | null;
   publishedAt: Date | null;
   category: { name: string; slug: string } | null;
+  stage?: string | null;
 }
 
 export function ProjectCardBody({ project, index }: { project: ProjectCardData; index: number }) {
@@ -28,13 +30,19 @@ export function ProjectCardBody({ project, index }: { project: ProjectCardData; 
       </Link>
       <div className="project-meta">
         <span>{project.category?.name.toUpperCase() ?? "PROJECT"}</span>
-        {year && <span>{year}</span>}
+        <span>
+          {stageLabel(project.stage) && <span className="stage-chip">{stageLabel(project.stage)!.toUpperCase()}</span>}
+          {year}
+        </span>
       </div>
       <Link href={`/projects/${project.slug}`} className="project-title-row">
         <h3>{project.title}</h3>
         <ArrowUpRight className="project-arrow" size={19} />
       </Link>
       {project.shortDescription && <p>{project.shortDescription}</p>}
+      <Link href={`/projects/${project.slug}`} className="case-link">
+        READ THE CASE STUDY <ArrowUpRight size={12} />
+      </Link>
       <div className="tag-list">
         {project.technologies.map((t) => (
           <span key={t}>{t}</span>

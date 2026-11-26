@@ -19,7 +19,7 @@ export function ProjectsSection({ projects }: { projects: ProjectCardData[] }) {
       <div className="section-heading">
         <div>
           <div className="eyebrow">
-            <span className="eyebrow-line" /> 01 / SELECTED WORK
+            <span className="eyebrow-line" /> 02 / SELECTED WORK
           </div>
           <h2>
             Made with <span className="serif-italic">intention.</span>

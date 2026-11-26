@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { ExternalLink, Github } from "lucide-react";
+import { ArrowUpRight, ExternalLink, Github } from "lucide-react";
+import { CASE_STUDY_SECTIONS, STAGE_LABELS, type ProjectStageValue } from "@/lib/project-stage";
 import { projectRepository } from "@/server/repositories/project";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { absoluteUrl, formatDate } from "@/lib/utils";
@@ -27,14 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-const sections = [
-  ["description", "Overview"],
-  ["problemStatement", "The problem"],
-  ["solution", "The solution"],
-  ["architecture", "Architecture"],
-  ["technicalChallenges", "Technical challenges"],
-  ["keyFeatures", "Key features"],
-] as const;
+const sections = CASE_STUDY_SECTIONS;
 
 function Paragraphs({ text }: { text: string }) {
   return (
@@ -60,6 +54,7 @@ export default async function ProjectPage({ params }: Props) {
   const images = project.media.filter((m) => m.mediaType === "IMAGE");
   const videos = project.media.filter((m) => m.mediaType === "VIDEO");
   const documents = project.media.filter((m) => m.mediaType === "DOCUMENT");
+  const stage = project.stage ? STAGE_LABELS[project.stage as ProjectStageValue] : null;
 
   return (
     <article className="section-wrap detail-page">
@@ -85,6 +80,32 @@ export default async function ProjectPage({ params }: Props) {
       </div>
       <h1 className="detail-title">{project.title}</h1>
       {project.shortDescription && <p className="detail-lead">{project.shortDescription}</p>}
+
+      {(stage || project.technologies.length > 0) && (
+        <dl className="case-glance">
+          {stage && (
+            <div>
+              <dt>STATUS</dt>
+              <dd title={stage.hint}>
+                {stage.label}
+                <span className="case-glance-hint">{stage.hint}</span>
+              </dd>
+            </div>
+          )}
+          {project.category && (
+            <div>
+              <dt>FOCUS</dt>
+              <dd>{project.category.name}</dd>
+            </div>
+          )}
+          {project.technologies.length > 0 && (
+            <div>
+              <dt>MAIN TECHNOLOGIES</dt>
+              <dd>{project.technologies.slice(0, 5).join(" · ")}</dd>
+            </div>
+          )}
+        </dl>
+      )}
 
       <div className="detail-actions">
         {project.liveUrl && (
@@ -119,7 +140,7 @@ export default async function ProjectPage({ params }: Props) {
 
           {(embed || directVideo) && (
             <section>
-              <h2>Demo</h2>
+              <h2>Demonstration</h2>
               {embed ? (
                 <div className="video-frame">
                   <iframe src={embed} title={`${project.title} demo`} loading="lazy" allowFullScreen />
@@ -192,6 +213,15 @@ export default async function ProjectPage({ params }: Props) {
           </div>
         </section>
       )}
+
+      <section className="case-cta">
+        <p>
+          Working on a similar problem? <span className="serif-italic">Let&apos;s talk it through.</span>
+        </p>
+        <Link href="/#contact" className="text-link">
+          START A CONVERSATION <ArrowUpRight size={14} />
+        </Link>
+      </section>
     </article>
   );
 }

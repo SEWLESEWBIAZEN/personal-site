@@ -1,3 +1,4 @@
+import type { IdeaInput } from "@/schemas/idea";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { requireAdminPage } from "@/lib/admin";
@@ -42,7 +43,8 @@ export default async function EditIdeaPage({ params }: Props) {
           slug: idea.slug,
           title: idea.title,
           summary: idea.summary ?? "",
-          content: (idea.content as Record<string, unknown> | null) ?? null,
+          updatedAt: idea.updatedAt.toISOString(),
+          content: (idea.content as IdeaInput["content"]) ?? null,
           contentHtml: idea.contentHtml ?? "",
           categoryId: idea.categoryId ?? "",
           status: idea.status,

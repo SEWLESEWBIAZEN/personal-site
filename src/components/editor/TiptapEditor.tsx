@@ -2,28 +2,19 @@
 
 import { useCallback, useState } from "react";
 import { useEditor, EditorContent, type Editor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Link from "@tiptap/extension-link";
-import ImageExtension from "@tiptap/extension-image";
-import Placeholder from "@tiptap/extension-placeholder";
-import Table from "@tiptap/extension-table";
-import TableRow from "@tiptap/extension-table-row";
-import TableCell from "@tiptap/extension-table-cell";
-import TableHeader from "@tiptap/extension-table-header";
-import Youtube from "@tiptap/extension-youtube";
-import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
-import { common, createLowlight } from "lowlight";
 import {
   Bold, Italic, Strikethrough, List, ListOrdered, Quote, Code, SquareCode, Heading2, Heading3,
   Link as LinkIcon, Image as ImageIcon, Minus, Undo, Redo, Table as TableIcon, Video, Rows3, Columns3, Trash,
 } from "lucide-react";
 import { MediaPicker } from "@/components/admin/MediaPicker";
 import type { MediaItem } from "@/components/admin/upload";
-
-const lowlight = createLowlight(common);
+import { toPlainJson } from "@/lib/rich-text";
+import { editorExtensions } from "./extensions";
 
 interface TiptapEditorProps {
   content?: object | null;
+  /** Used when a record only has HTML (seeded or imported content) so it never opens empty. */
+  fallbackHtml?: string | null;
   onChange: (json: object, html: string) => void;
   placeholder?: string;
   media: MediaItem[];
@@ -96,30 +87,30 @@ function Toolbar({ editor, onImage }: { editor: Editor; onImage: () => void }) {
   );
 }
 
-export function TiptapEditor({ content, onChange, placeholder = "Start writing…", media }: TiptapEditorProps) {
+export function TiptapEditor({ content, fallbackHtml, onChange, placeholder = "Start writing…", media }: TiptapEditorProps) {
   const [pickerOpen, setPickerOpen] = useState(false);
 
   const editor = useEditor({
-    extensions: [
-      StarterKit.configure({ heading: { levels: [2, 3] }, codeBlock: false }),
-      CodeBlockLowlight.configure({ lowlight }),
-      Link.configure({ openOnClick: false, autolink: true, protocols: ["http", "https", "mailto"] }),
-      ImageExtension,
-      Placeholder.configure({ placeholder }),
-      Table.configure({ resizable: false }),
-      TableRow,
-      TableCell,
-      TableHeader,
-      Youtube.configure({ nocookie: true, width: 640, height: 360 }),
-    ],
-    content: content ?? "",
-    onUpdate: ({ editor }) => onChange(editor.getJSON(), editor.getHTML()),
+    extensions: editorExtensions(placeholder),
+    content: content ?? fallbackHtml ?? "",
+    // getJSON() returns ProseMirror attrs objects with a null prototype, which Server
+    // Actions cannot serialize. Always hand plain JSON to the form.
+    onUpdate: ({ editor }) => onChange(toPlainJson(editor.getJSON()), editor.getHTML()),
     immediatelyRender: false,
   });
 
   const insertImage = useCallback(
     (item: MediaItem) => {
-      editor?.chain().focus().setImage({ src: item.url, alt: item.altText ?? "" }).run();
+      // Insert the image followed by an empty paragraph and put the cursor there. With a
+      // bare setImage the new image stays selected, and the next keystroke replaces it.
+      editor
+        ?.chain()
+        .focus()
+        .insertContent([
+          { type: "image", attrs: { src: item.url, alt: item.altText ?? "", title: item.altText ?? null } },
+          { type: "paragraph" },
+        ])
+        .run();
       setPickerOpen(false);
     },
     [editor],

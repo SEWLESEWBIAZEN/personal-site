@@ -25,6 +25,17 @@ enum IdeaStatus {
   ARCHIVED
 }
 
+/// Where a project actually is, so case studies never overstate maturity.
+enum ProjectStage {
+  CONCEPT
+  PROTOTYPE
+  IN_DEVELOPMENT
+  PILOT
+  PRODUCTION
+  MAINTAINED
+  ARCHIVED
+}
+
 enum MediaType {
   IMAGE
   VIDEO
@@ -80,6 +91,13 @@ model Project {
   technicalChallenges String?
   architecture        String?
   keyFeatures         String?
+  /// My role and responsibilities on the project
+  role                String?
+  /// Objectives and requirements
+  objectives          String?
+  /// Key outcomes and lessons learned
+  outcomes            String?
+  stage               ProjectStage?
   technologies        String[]
   coverImage          String?
   videoUrl            String?

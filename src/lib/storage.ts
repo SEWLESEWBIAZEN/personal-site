@@ -22,6 +22,8 @@ export const ALLOWED_TYPES: Record<string, { mime: string; kind: "IMAGE" | "VIDE
   ".pdf": { mime: "application/pdf", kind: "DOCUMENT", maxBytes: 25 * 1024 * 1024 },
 };
 
+export const MAX_UPLOAD_BYTES = Math.max(...Object.values(ALLOWED_TYPES).map((t) => t.maxBytes));
+
 const SIGNATURES: Record<string, (b: Buffer) => boolean> = {
   "image/jpeg": (b) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff,
   "image/png": (b) => b.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])),

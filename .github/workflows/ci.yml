@@ -90,8 +90,29 @@ jobs:
           SEED_SAMPLE_CONTENT: "true"
         run: pnpm db:seed
 
+      # Separate throwaway databases on the same CI service for the test suites.
+      - name: Create test databases
+        env:
+          PGPASSWORD: postgres
+        run: |
+          psql -h localhost -U postgres -c "CREATE DATABASE personal_studio_test;"
+          psql -h localhost -U postgres -c "CREATE DATABASE personal_studio_e2e;"
+
+      - name: Unit and integration tests (real PostgreSQL + local storage)
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/personal_studio_test
+        run: pnpm test
+
       - name: Build
         run: pnpm build
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: End-to-end tests
+        env:
+          E2E_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/personal_studio_e2e
+        run: pnpm test:e2e
 
   # ============================================
   # DOCKER IMAGE BUILDS

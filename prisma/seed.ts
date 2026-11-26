@@ -30,7 +30,7 @@ async function seedSettings() {
       siteTitle: "Sewlesew Biazen — Engineering Studio",
       tagline: "Software engineer, builder, explorer",
       introduction:
-        "I’m Sewlesew — a software engineer exploring enterprise systems, AI engineering, and digital products. This is my corner of the internet to build, document, and explore.",
+        "I’m a software engineer building AI-powered applications, enterprise systems, and digital products. This is my independent engineering studio — a place to build, experiment, document, and share what I learn.",
       email: "hello@sewlesew.dev",
       githubUrl: "https://github.com/SEWLESEWBIAZEN",
       linkedinUrl: "https://linkedin.com/in/sewlesew-biazen-sfd",

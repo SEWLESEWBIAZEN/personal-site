@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { mediaUrl } from "./project";
+import { richTextDocumentSchema } from "@/lib/rich-text";
 
 export const articleSchema = z.object({
   title: z.string().trim().min(1, "Title is required").max(200),
@@ -11,7 +12,7 @@ export const articleSchema = z.object({
     .optional()
     .nullable(),
   excerpt: z.string().max(500).optional().nullable(),
-  content: z.record(z.string(), z.unknown()).optional().nullable(),
+  content: richTextDocumentSchema.optional().nullable(),
   contentHtml: z.string().max(500000).optional().nullable(),
   coverImage: mediaUrl,
   status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]),

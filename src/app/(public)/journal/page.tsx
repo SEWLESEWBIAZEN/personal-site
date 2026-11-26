@@ -10,7 +10,7 @@ import { pageParam, stringParam } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Journal",
-  description: "Technical articles, tutorials, and engineering case studies.",
+  description: "Implementation notes, architecture decisions, debugging stories and engineering experiments.",
   alternates: { canonical: "/journal" },
 };
 
@@ -42,7 +42,7 @@ export default async function JournalPage({ searchParams }: Props) {
             Field <span className="serif-italic">notes.</span>
           </h1>
         </div>
-        <p className="section-aside">Technical articles, experiments, and lessons from real engineering work.</p>
+        <p className="section-aside">Implementation notes, architecture decisions, debugging stories and experiments — what actually happened while building. For things not built yet, see <Link href="/ideas" className="inline-link">Ideas</Link>.</p>
       </div>
 
       <form className="search-row" action="/journal" role="search">

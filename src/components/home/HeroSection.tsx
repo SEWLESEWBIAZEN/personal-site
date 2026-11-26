@@ -19,7 +19,7 @@ export function HeroSection({ introduction }: HeroSectionProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55 }}
         >
-          <span className="eyebrow-line" /> SOFTWARE ENGINEER / BUILDER / EXPLORER
+          <span className="eyebrow-line" /> SOFTWARE &amp; AI ENGINEERING STUDIO
         </motion.div>
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
@@ -44,7 +44,7 @@ export function HeroSection({ introduction }: HeroSectionProps) {
         >
           <p className="hero-intro">
             {introduction ||
-              "I'm Sewlesew — a software engineer exploring enterprise systems, AI engineering, and digital products. This is my corner of the internet to build, document, and explore."}
+              "I'm a software engineer building AI-powered applications, enterprise systems, and digital products. This is my independent engineering studio — a place to build, experiment, document, and share what I learn."}
           </p>
           <div className="hero-links">
             <Link className="button-primary" href="/projects">
@@ -52,6 +52,9 @@ export function HeroSection({ introduction }: HeroSectionProps) {
             </Link>
             <Link className="text-link" href="/journal">
               READ THE JOURNAL <ArrowDownRight size={15} />
+            </Link>
+            <Link className="hero-project-link" href="#contact">
+              Have a project in mind? <span>Let&apos;s build it.</span>
             </Link>
           </div>
         </motion.div>
@@ -97,7 +100,7 @@ export function HeroSection({ introduction }: HeroSectionProps) {
       </motion.div>
       <div className="hero-index">
         <span>01 — 04</span>
-        <span>PERSONAL ENGINEERING JOURNAL</span>
+        <span>INDEPENDENT SOFTWARE &amp; AI ENGINEERING STUDIO</span>
       </div>
     </section>
   );

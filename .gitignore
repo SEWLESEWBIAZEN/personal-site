@@ -40,3 +40,8 @@ prisma/*.db
 # uploads
 /uploads
 /public/uploads
+
+# test artifacts
+/.e2e-uploads
+/test-results
+/playwright-report

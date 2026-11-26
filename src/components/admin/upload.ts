@@ -11,9 +11,14 @@ export async function uploadFile(file: File, altText?: string): Promise<MediaIte
   const body = new FormData();
   body.append("file", file);
   if (altText) body.append("altText", altText);
-  const res = await fetch("/api/upload", { method: "POST", body });
+  let res: Response;
+  try {
+    res = await fetch("/api/upload", { method: "POST", body });
+  } catch {
+    throw new Error("Upload failed: the network connection was interrupted. Check your connection and try again.");
+  }
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || "Upload failed");
+  if (!res.ok) throw new Error(`${data.error || `Upload failed (HTTP ${res.status})`}${data.requestId ? ` (ref ${data.requestId})` : ""}`);
   return data as MediaItem;
 }
 

@@ -71,6 +71,9 @@ src/components/        layout, home sections, journal/project/idea UI, admin for
 - Passwords are hashed with bcrypt. Sessions are 8-hour JWTs. Password hashes never reach the client.
 - `/admin` responses are sent with `Cache-Control: private, no-store` and `noindex`.
 - Article and idea bodies are stored as Tiptap JSON plus HTML.
+  - The editor sends plain JSON (`toPlainJson`): ProseMirror's `attrs` objects have a null prototype, which Server Actions cannot serialize. Before this was handled, every image, heading, link, code block, table or video was lost in transit and the save failed with HTTP 500.
+  - The server validates the document with a recursive schema (`src/lib/rich-text.ts`). Image sources must be uploaded media that exists in the library, or https URLs. `blob:` and `data:` sources are rejected.
+  - Records that only have HTML (seeded or imported) open in the editor from their HTML.
   - The HTML is sanitized with `sanitize-html` before it is saved.
   - Iframes are allowed only from YouTube (nocookie) and Vimeo.
   - Code blocks are highlighted on the server.
@@ -79,6 +82,27 @@ src/components/        layout, home sections, journal/project/idea UI, admin for
   - Files are stored on disk or in S3, never in PostgreSQL.
   - Locally served files get `nosniff` and a sandbox CSP.
 - Media still referenced by a project, article, idea or the settings cannot be deleted.
+- Media lifecycle: removing an image from an article leaves the file in the media library. Delete it from `/admin/media` once nothing uses it.
+- If the database insert fails after an upload, the stored file is deleted again.
+- Journal and idea saves return `{ ok, error, code, requestId }` instead of throwing, so the editor shows an actionable message with a reference id.
+- Updates send the version they were loaded from. A save from a stale tab, or a retried request, is rejected instead of overwriting newer content.
+- Saves and uploads write JSON log lines (`action.*`, `upload.*`) with a request id. Logs never contain document content.
+
+## Tests
+
+| Command | What it runs |
+|---|---|
+| `pnpm test` | Vitest unit and integration tests. Set `TEST_DATABASE_URL` to a throwaway PostgreSQL database whose name contains `test`. Integration tests use real PostgreSQL and real local disk storage; without the variable they are skipped. |
+| `pnpm test:e2e` | Playwright tests against the production build (`pnpm build` first). They use `E2E_DATABASE_URL`, default `postgresql://postgres:postgres@localhost:5432/personal_studio_e2e`, apply migrations and the seed, and drive real uploads. |
+
+The S3 provider is not covered by the tests. They use the local storage provider.
+
+## Project case studies
+
+Projects have optional `role`, `objectives`, `outcomes` and `stage` fields (migration `20261125000000_project_case_study`, additive only).
+- The public page shows the case-study sections in a fixed order and hides empty ones.
+- The admin form lists the sections that are still missing, so gaps get filled with real information rather than guesses.
+- `stage` (concept → production) is shown publicly, so prototypes are never presented as production systems.
 
 ## Scripts
 

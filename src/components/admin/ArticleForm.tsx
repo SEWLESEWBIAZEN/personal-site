@@ -14,6 +14,7 @@ import { MediaField } from "./MediaField";
 import { TagPicker } from "./TagPicker";
 import { useDraftBackup } from "./useDraftBackup";
 import type { MediaItem } from "./upload";
+import { unwrap } from "@/lib/action-result";
 
 interface ArticleFormProps {
   article?: ArticleInput & { id: string; slug: string; updatedAt: string; persistedStatus: ArticleInput["status"] };
@@ -48,6 +49,8 @@ export function ArticleForm({ article, categories, tags, media }: ArticleFormPro
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [slugTouched, setSlugTouched] = useState(Boolean(article));
   const saving = useRef(false);
+  // Version of the record this form last loaded or saved; sent with updates to detect conflicts.
+  const version = useRef(article?.updatedAt);
 
   const form = useForm<ArticleInput>({
     resolver: zodResolver(articleSchema),
@@ -63,7 +66,7 @@ export function ArticleForm({ article, categories, tags, media }: ArticleFormPro
 
   const handleEditorChange = useCallback(
     (json: object, html: string) => {
-      setValue("content", json as Record<string, unknown>, { shouldDirty: true });
+      setValue("content", json as ArticleInput["content"], { shouldDirty: true });
       setValue("contentHtml", html, { shouldDirty: true });
     },
     [setValue],
@@ -74,20 +77,24 @@ export function ArticleForm({ article, categories, tags, media }: ArticleFormPro
     saving.current = true;
     try {
       if (article) {
-        await updateArticle(article.id, data);
+        const saved = unwrap(await updateArticle(article.id, data, { expectedUpdatedAt: version.current }));
+        version.current = saved.updatedAt;
         reset(data);
         backup.clear();
         setLastSaved(new Date());
         if (!silent) toast.success(data.status === "PUBLISHED" ? "Published" : "Saved");
         router.refresh();
       } else {
-        const created = await createArticle(data);
+        const created = unwrap(await createArticle(data));
         backup.clear();
         toast.success(data.status === "PUBLISHED" ? "Published" : "Draft created");
         router.push(`/admin/journal/${created.id}/edit`);
       }
     } catch (err) {
-      if (!silent) toast.error(err instanceof Error ? err.message : "Failed to save");
+      // Autosave failures are shown too, so a failing draft is never mistaken for a saved one.
+      const message = err instanceof Error ? err.message : "Failed to save";
+      if (silent) toast.error(`Autosave failed: ${message}`, { id: "autosave-error" });
+      else toast.error(message, { duration: 10000 });
     } finally {
       saving.current = false;
     }
@@ -193,7 +200,7 @@ export function ArticleForm({ article, categories, tags, media }: ArticleFormPro
               <span className="admin-save-state">≈ {readingTime} MIN READ</span>
             </div>
             <div hidden={mode !== "write"}>
-              <TiptapEditor key={editorKey} content={values.content ?? null} onChange={handleEditorChange} media={media} placeholder="Write the field note…" />
+              <TiptapEditor key={editorKey} content={values.content ?? null} fallbackHtml={values.contentHtml} onChange={handleEditorChange} media={media} placeholder="Write the field note…" />
             </div>
             {mode === "preview" && (
               <div className="admin-preview">
